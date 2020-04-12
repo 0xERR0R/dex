@@ -14,9 +14,6 @@ build:  ## Build binary
 docker-buildx-push:  ## Build multi arch docker images and push
 	docker buildx build \
             --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 \
-            --tag ${DOCKER_IMAGE_NAME}:${VERSION} --push .
-	docker buildx build \
-            --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 \
             --tag ${DOCKER_IMAGE_NAME}:latest --push .
 
 docker-build:  ## Build docker image
