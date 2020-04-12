@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"strings"
+	"sync"
 )
 
 var labelCname = []string{"container_name"}
@@ -39,50 +40,60 @@ func (c *DockerCollector) Collect(ch chan<- prometheus.Metric) {
 		return
 	}
 
+	var wg sync.WaitGroup
+
 	for _, container := range containers {
-		cName := strings.TrimPrefix(strings.Join(container.Names, ";"), "/")
-		var isRunning float64
-		if container.State == "running" {
-			isRunning = 1
-		}
+		wg.Add(1)
 
-		// container state metric for all containers
-		ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
-			"dex_container_running",
-			"1 if docker container is running, 0 otherwise",
-			labelCname,
-			nil,
-		), prometheus.GaugeValue, isRunning, cName)
+		go c.processContainer(container, ch, &wg)
+	}
+	wg.Wait()
+}
 
-		// stats metrics only for running containers
-		if isRunning == 1 {
+func (c *DockerCollector) processContainer(container types.Container, ch chan<- prometheus.Metric, wg *sync.WaitGroup) {
+	defer wg.Done()
+	cName := strings.TrimPrefix(strings.Join(container.Names, ";"), "/")
+	var isRunning float64
+	if container.State == "running" {
+		isRunning = 1
+	}
 
-			if stats, err := c.cli.ContainerStats(context.Background(), container.ID, false); err != nil {
-				log.Fatal(err)
-			} else {
+	// container state metric for all containers
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_container_running",
+		"1 if docker container is running, 0 otherwise",
+		labelCname,
+		nil,
+	), prometheus.GaugeValue, isRunning, cName)
 
-				var containerStats containerStats
-				err := json.NewDecoder(stats.Body).Decode(&containerStats)
-				if err != nil {
-					log.Error("can't read api stats: ", err)
-				}
-				if err := stats.Body.Close(); err != nil {
-					log.Error("can't close body: ", err)
-				}
+	// stats metrics only for running containers
+	if isRunning == 1 {
 
-				c.blockIoMetrics(ch, containerStats, cName)
+		if stats, err := c.cli.ContainerStats(context.Background(), container.ID, false); err != nil {
+			log.Fatal(err)
+		} else {
 
-				c.memoryMetrics(ch, containerStats, cName)
-
-				c.networkMetrics(ch, containerStats, cName)
-
-				c.CPUMetrics(ch, containerStats, cName)
+			var containerStats containerStats
+			err := json.NewDecoder(stats.Body).Decode(&containerStats)
+			if err != nil {
+				log.Error("can't read api stats: ", err)
 			}
+			if err := stats.Body.Close(); err != nil {
+				log.Error("can't close body: ", err)
+			}
+
+			c.blockIoMetrics(ch, &containerStats, cName)
+
+			c.memoryMetrics(ch, &containerStats, cName)
+
+			c.networkMetrics(ch, &containerStats, cName)
+
+			c.CPUMetrics(ch, &containerStats, cName)
 		}
 	}
 }
 
-func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats containerStats, cName string) {
+func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
 	cpuDelta := containerStats.CPU.CPUUsage.TotalUsage - containerStats.PreCPU.CPUUsage.TotalUsage
 	sysemDelta := containerStats.CPU.SystemCpuUsage - containerStats.PreCPU.SystemCpuUsage
 
@@ -96,7 +107,7 @@ func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats
 	), prometheus.GaugeValue, cpuUtilization, cName)
 }
 
-func (c *DockerCollector) networkMetrics(ch chan<- prometheus.Metric, containerStats containerStats, cName string) {
+func (c *DockerCollector) networkMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 		"dex_network_rx_bytes",
 		"Network received bytes total",
@@ -111,7 +122,7 @@ func (c *DockerCollector) networkMetrics(ch chan<- prometheus.Metric, containerS
 	), prometheus.CounterValue, float64(containerStats.Networks.Eth0.TxBytes), cName)
 }
 
-func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerStats containerStats, cName string) {
+func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
 	// From official documentation
 	//Note: On Linux, the Docker CLI reports memory usage by subtracting page cache usage from the total memory usage.
 	//The API does not perform such a calculation but rather provides the total memory usage and the amount from the page cache so that clients can use the data as needed.
@@ -132,7 +143,7 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 	), prometheus.GaugeValue, memoryUtilization, cName)
 }
 
-func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats containerStats, cName string) {
+func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
 	for _, b := range containerStats.BlockIO.IOBytes {
 		if b.Op == "Read" {
 			ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
