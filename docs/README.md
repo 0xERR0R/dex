@@ -1,0 +1,39 @@
+# DEX - Docker EXporter for prometheus
+
+Simple lightweight prometheus exporter. Runs as docker container on all architectures.
+Exports container state (running or not), current cpu and memory utilization, network and block I/O stats.
+
+## Currently exposed metrics
+
+- `dex_block_io_read_bytes`
+- `dex_block_io_write_bytes`
+- `dex_container_running`
+- `dex_cpu_utilization_percent`
+- `dex_memory_usage_bytes`
+- `dex_memory_utilization_percent`
+- `dex_network_rx_bytes`
+- `dex_network_tx_bytes`
+
+## Run with docker
+Start docker container with following `docker-compose.yml`:
+```yml
+version: '2.1'
+services:
+   dex:
+      image: spx01/dex
+      container_name: dex
+      volumes:
+         - /var/run/docker.sock:/var/run/docker.sock
+      ports:
+         - 8386:8080
+      restart: always
+```
+
+## Test with curl
+```
+$ curl localhost:8386/metrics
+```
+
+## Grafana dashboard
+Example grafana dashboard definition [as JSON](grafana.json)
+![grafana-dashboard](grafana-dashboard.png). 
