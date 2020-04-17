@@ -232,7 +232,7 @@
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 1,
       "gridPos": {
         "h": 11,
         "w": 12,
@@ -246,6 +246,7 @@
         "alignAsTable": false,
         "avg": false,
         "current": false,
+        "hideZero": false,
         "max": false,
         "min": false,
         "show": true,
@@ -253,8 +254,8 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
+      "linewidth": 2,
+      "nullPointMode": "connected",
       "options": {
         "dataLinks": []
       },
@@ -281,7 +282,7 @@
       "title": "Cpu utilization",
       "tooltip": {
         "shared": false,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -294,11 +295,12 @@
       },
       "yaxes": [
         {
+          "decimals": null,
           "format": "percent",
           "label": "cpu utilization",
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -322,7 +324,7 @@
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 1,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -341,8 +343,8 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
+      "linewidth": 2,
+      "nullPointMode": "connected",
       "options": {
         "dataLinks": []
       },
@@ -545,7 +547,7 @@
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 1,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -566,7 +568,7 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
@@ -582,6 +584,7 @@
       "targets": [
         {
           "expr": "irate(dex_network_rx_bytes[5m])",
+          "hide": false,
           "interval": "",
           "legendFormat": "{{ container_name }}",
           "refId": "A"
@@ -723,7 +726,7 @@
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
-      "fillGradient": 0,
+      "fillGradient": 1,
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -742,7 +745,7 @@
         "values": false
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
@@ -805,6 +808,7 @@
       }
     }
   ],
+  "refresh": false,
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -812,8 +816,8 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
-    "to": "now"
+    "from": "2020-04-17T06:52:23.374Z",
+    "to": "2020-04-17T07:25:30.797Z"
   },
   "timepicker": {},
   "timezone": "",
@@ -822,5 +826,5 @@
   "variables": {
     "list": []
   },
-  "version": 11
+  "version": 18
 }
