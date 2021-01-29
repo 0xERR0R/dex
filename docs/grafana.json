@@ -14,13 +14,13 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "6.7.1"
+      "version": "7.3.1"
     },
     {
       "type": "panel",
       "id": "grafana-piechart-panel",
       "name": "Pie Chart",
-      "version": "1.4.0"
+      "version": "1.6.1"
     },
     {
       "type": "panel",
@@ -58,7 +58,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1589384464918,
+  "iteration": 1611952185251,
   "links": [],
   "panels": [
     {
@@ -71,6 +71,12 @@
         "#d44a3a"
       ],
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -151,6 +157,12 @@
       ],
       "datasource": "${DS_PROMETHEUS}",
       "decimals": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -232,6 +244,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -256,11 +275,12 @@
       },
       "lines": true,
       "linewidth": 2,
-      "nullPointMode": "connected",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -324,6 +344,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -345,11 +372,12 @@
       },
       "lines": true,
       "linewidth": 2,
-      "nullPointMode": "connected",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -416,6 +444,12 @@
       },
       "datasource": "${DS_PROMETHEUS}",
       "decimals": 2,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "80%",
       "format": "decbytes",
       "gridPos": {
@@ -459,6 +493,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -480,11 +521,12 @@
       },
       "lines": true,
       "linewidth": 1,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -547,6 +589,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -570,11 +619,12 @@
       },
       "lines": true,
       "linewidth": 2,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -638,6 +688,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -659,11 +716,12 @@
       },
       "lines": true,
       "linewidth": 1,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -726,6 +784,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 1,
       "gridPos": {
@@ -747,11 +812,12 @@
       },
       "lines": true,
       "linewidth": 2,
-      "nullPointMode": "null",
+      "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.1",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -810,7 +876,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 22,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -820,9 +886,9 @@
         "current": {},
         "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(container_name)",
+        "error": null,
         "hide": 0,
         "includeAll": true,
-        "index": -1,
         "label": "Container",
         "multi": false,
         "name": "container_name",
@@ -843,9 +909,9 @@
         "current": {},
         "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(dex_container_running, job)",
+        "error": null,
         "hide": 0,
         "includeAll": true,
-        "index": -1,
         "label": "Job",
         "multi": false,
         "name": "job",
@@ -864,7 +930,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -884,8 +950,5 @@
   "timezone": "",
   "title": "Docker",
   "uid": "pp-hyrkRz",
-  "variables": {
-    "list": []
-  },
-  "version": 24
+  "version": 3
 }
