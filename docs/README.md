@@ -35,5 +35,13 @@ $ curl localhost:8386/metrics
 ```
 
 ## Grafana dashboard
-Example grafana dashboard definition [as JSON](grafana.json)
-![grafana-dashboard](grafana-dashboard.png). 
+
+### Grafana 7
+
+Example grafana7 dashboard definition [as JSON](grafana7.json)
+![grafana-dashboard](grafana7-dashboard.png).
+
+### Grafana 8
+
+Another dashboard for Grafana 8 (thanks @scMarkus !!!) [as JSON](grafana8.json)
+![grafana-dashboard](grafana8-dashboard.png).
