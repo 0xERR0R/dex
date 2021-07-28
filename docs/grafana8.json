@@ -13,12 +13,12 @@
       }
     ]
   },
-  "description": "0xERR0R/dex metrics exporter Dashboard",
+  "description": "0xERR0R / dex metrics exporter Dashboard",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
   "id": 16,
-  "iteration": 1627412502286,
+  "iteration": 1627457996017,
   "links": [],
   "panels": [
     {
@@ -227,6 +227,7 @@
     },
     {
       "datasource": null,
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -449,7 +450,7 @@
           "refId": "B"
         }
       ],
-      "title": "Memory usage Percent",
+      "title": "Memory usage",
       "type": "timeseries"
     },
     {
@@ -637,7 +638,8 @@
   "schemaVersion": 30,
   "style": "dark",
   "tags": [
-    "prometheus"
+    "prometheus",
+    "dex"
   ],
   "templating": {
     "list": [
@@ -742,7 +744,7 @@
     ]
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -758,5 +760,5 @@
   "timezone": "",
   "title": "Dex Metrics",
   "uid": "Sk4Ci0W7k",
-  "version": 11
+  "version": 12
 }
