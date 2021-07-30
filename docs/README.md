@@ -44,4 +44,6 @@ Example grafana7 dashboard definition [as JSON](grafana7.json)
 ### Grafana 8
 
 Another dashboard for Grafana 8 (thanks @scMarkus !!!) [as JSON](grafana8.json)
-![grafana-dashboard](grafana8-dashboard.png).
+![grafana-dashboard](grafana8-dashboard.png)
+
+Modification (thanks @GitSchorsch) with additional job filter [as JSON](grafana8_2.json)
