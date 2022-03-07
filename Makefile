@@ -17,7 +17,7 @@ docker-buildx-push:  ## Build multi arch docker images and push
             --tag ${DOCKER_IMAGE_NAME}:latest --push .
 
 docker-build:  ## Build docker image
-	docker build --tag ${DOCKER_IMAGE_NAME} .
+	docker build --network=host --tag ${DOCKER_IMAGE_NAME} .
 
 help:  ## Shows help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
