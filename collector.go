@@ -20,7 +20,7 @@ type DockerCollector struct {
 func newDockerCollector() *DockerCollector {
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		log.Fatalf("can't create docker client: ", err)
+		log.Fatalf("can't create docker client: %v", err)
 	}
 	return &DockerCollector{
 		cli: cli,
@@ -144,22 +144,27 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 }
 
 func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
+	var readTotal, writeTotal uint64
 	for _, b := range containerStats.BlockIO.IOBytes {
 		if b.Op == "Read" {
-			ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
-				"dex_block_io_read_bytes",
-				"Block I/O read bytes",
-				labelCname,
-				nil,
-			), prometheus.CounterValue, float64(b.Value), cName)
+			readTotal += b.Value
 		}
 		if b.Op == "Write" {
-			ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
-				"dex_block_io_write_bytes",
-				"Block I/O write bytes",
-				labelCname,
-				nil,
-			), prometheus.CounterValue, float64(b.Value), cName)
+			writeTotal += b.Value
 		}
 	}
+
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_block_io_read_bytes",
+		"Block I/O read bytes",
+		labelCname,
+		nil,
+	), prometheus.CounterValue, float64(readTotal), cName)
+
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_block_io_write_bytes",
+		"Block I/O write bytes",
+		labelCname,
+		nil,
+	), prometheus.CounterValue, float64(writeTotal), cName)
 }
