@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"strings"
+	"sync"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
-	"strings"
-	"sync"
 )
 
 var labelCname = []string{"container_name"}
@@ -18,10 +19,13 @@ type DockerCollector struct {
 }
 
 func newDockerCollector() *DockerCollector {
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		log.Fatalf("can't create docker client: %v", err)
 	}
+
+	cli.NegotiateAPIVersion(context.Background())
+
 	return &DockerCollector{
 		cli: cli,
 	}
