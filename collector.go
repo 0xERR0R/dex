@@ -150,10 +150,10 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
 	var readTotal, writeTotal uint64
 	for _, b := range containerStats.BlockIO.IOBytes {
-		if b.Op == "Read" {
+		if strings.EqualFold(b.Op, "read") {
 			readTotal += b.Value
 		}
-		if b.Op == "Write" {
+		if strings.EqualFold(b.Op, "write") {
 			writeTotal += b.Value
 		}
 	}
