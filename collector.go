@@ -19,12 +19,10 @@ type DockerCollector struct {
 }
 
 func newDockerCollector() *DockerCollector {
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		log.Fatalf("can't create docker client: %v", err)
 	}
-
-	cli.NegotiateAPIVersion(context.Background())
 
 	return &DockerCollector{
 		cli: cli,
