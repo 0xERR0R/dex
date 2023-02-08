@@ -90,6 +90,8 @@ func (c *DockerCollector) processContainer(container types.Container, ch chan<- 
 			c.networkMetrics(ch, &containerStats, cName)
 
 			c.CPUMetrics(ch, &containerStats, cName)
+
+			c.pidsMetrics(ch, &containerStats, cName)
 		}
 	}
 }
@@ -175,4 +177,13 @@ func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerS
 		labelCname,
 		nil,
 	), prometheus.CounterValue, float64(writeTotal), cName)
+}
+
+func (c *DockerCollector) pidsMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_pids_current",
+		"Current number of pids in the cgroup",
+		labelCname,
+		nil,
+	), prometheus.CounterValue, float64(containerStats.PidsStats.Current), cName)
 }
