@@ -14,6 +14,7 @@ Exports container state (running or not), current cpu and memory utilization, ne
 - `dex_memory_utilization_percent`
 - `dex_network_rx_bytes`
 - `dex_network_tx_bytes`
+- `dex_pids_current`
 
 ## Run with docker
 Start docker container with following `docker-compose.yml`:

@@ -20,8 +20,9 @@ func main() {
 	router := http.NewServeMux()
 	router.Handle("/metrics", promhttp.Handler())
 
+	serverPort := 8080
 	server := &http.Server{
-		Addr:         fmt.Sprintf(":%v", 8080),
+		Addr:         fmt.Sprintf(":%v", serverPort),
 		Handler:      router,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 120 * time.Second,
@@ -46,9 +47,9 @@ func main() {
 		close(done)
 	}()
 
-	log.Info("Server is ready to handle requests at :", 8080)
+	log.Info("Server is ready to handle requests at :", serverPort)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("Could not listen on %d: %v\n", 8080, err)
+		log.Fatalf("Could not listen on %d: %v\n", serverPort, err)
 	}
 
 	<-done

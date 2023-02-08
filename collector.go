@@ -74,8 +74,7 @@ func (c *DockerCollector) processContainer(container types.Container, ch chan<- 
 		if stats, err := c.cli.ContainerStats(context.Background(), container.ID, false); err != nil {
 			log.Fatal(err)
 		} else {
-
-			var containerStats containerStats
+			var containerStats types.StatsJSON
 			err := json.NewDecoder(stats.Body).Decode(&containerStats)
 			if err != nil {
 				log.Error("can't read api stats: ", err)
@@ -91,13 +90,15 @@ func (c *DockerCollector) processContainer(container types.Container, ch chan<- 
 			c.networkMetrics(ch, &containerStats, cName)
 
 			c.CPUMetrics(ch, &containerStats, cName)
+
+			c.pidsMetrics(ch, &containerStats, cName)
 		}
 	}
 }
 
-func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
-	cpuDelta := containerStats.CPU.CPUUsage.TotalUsage - containerStats.PreCPU.CPUUsage.TotalUsage
-	sysemDelta := containerStats.CPU.SystemCpuUsage - containerStats.PreCPU.SystemCpuUsage
+func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
+	cpuDelta := containerStats.CPUStats.CPUUsage.TotalUsage - containerStats.PreCPUStats.CPUUsage.TotalUsage
+	sysemDelta := containerStats.CPUStats.SystemUsage - containerStats.PreCPUStats.SystemUsage
 
 	cpuUtilization := float64(cpuDelta) / float64(sysemDelta) * 100.0
 
@@ -109,27 +110,27 @@ func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats
 	), prometheus.GaugeValue, cpuUtilization, cName)
 }
 
-func (c *DockerCollector) networkMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
+func (c *DockerCollector) networkMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 		"dex_network_rx_bytes",
 		"Network received bytes total",
 		labelCname,
 		nil,
-	), prometheus.CounterValue, float64(containerStats.Networks.Eth0.RxBytes), cName)
+	), prometheus.CounterValue, float64(containerStats.Networks["eth0"].RxBytes), cName)
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 		"dex_network_tx_bytes",
 		"Network sent bytes total",
 		labelCname,
 		nil,
-	), prometheus.CounterValue, float64(containerStats.Networks.Eth0.TxBytes), cName)
+	), prometheus.CounterValue, float64(containerStats.Networks["eth0"].TxBytes), cName)
 }
 
-func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
+func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
 	// From official documentation
 	//Note: On Linux, the Docker CLI reports memory usage by subtracting page cache usage from the total memory usage.
 	//The API does not perform such a calculation but rather provides the total memory usage and the amount from the page cache so that clients can use the data as needed.
-	memoryUsage := containerStats.Memory.Usage - containerStats.Memory.MemoryStats.Cache
-	memoryTotal := containerStats.Memory.Limit
+	memoryUsage := containerStats.MemoryStats.Usage - containerStats.MemoryStats.Stats["cache"]
+	memoryTotal := containerStats.MemoryStats.Limit
 
 	memoryUtilization := float64(memoryUsage) / float64(memoryTotal) * 100.0
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
@@ -152,9 +153,9 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 	), prometheus.GaugeValue, memoryUtilization, cName)
 }
 
-func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *containerStats, cName string) {
+func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
 	var readTotal, writeTotal uint64
-	for _, b := range containerStats.BlockIO.IOBytes {
+	for _, b := range containerStats.BlkioStats.IoServiceBytesRecursive {
 		if strings.EqualFold(b.Op, "read") {
 			readTotal += b.Value
 		}
@@ -176,4 +177,13 @@ func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerS
 		labelCname,
 		nil,
 	), prometheus.CounterValue, float64(writeTotal), cName)
+}
+
+func (c *DockerCollector) pidsMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_pids_current",
+		"Current number of pids in the cgroup",
+		labelCname,
+		nil,
+	), prometheus.CounterValue, float64(containerStats.PidsStats.Current), cName)
 }
