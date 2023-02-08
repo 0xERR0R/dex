@@ -19,12 +19,10 @@ type DockerCollector struct {
 }
 
 func newDockerCollector() *DockerCollector {
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		log.Fatalf("can't create docker client: %v", err)
 	}
-
-	cli.NegotiateAPIVersion(context.Background())
 
 	return &DockerCollector{
 		cli: cli,
@@ -131,14 +129,21 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 	//Note: On Linux, the Docker CLI reports memory usage by subtracting page cache usage from the total memory usage.
 	//The API does not perform such a calculation but rather provides the total memory usage and the amount from the page cache so that clients can use the data as needed.
 	memoryUsage := containerStats.Memory.Usage - containerStats.Memory.MemoryStats.Cache
+	memoryTotal := containerStats.Memory.Limit
 
-	memoryUtilization := float64(memoryUsage) / float64(containerStats.Memory.Limit) * 100.0
+	memoryUtilization := float64(memoryUsage) / float64(memoryTotal) * 100.0
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 		"dex_memory_usage_bytes",
 		"Total memory usage bytes",
 		labelCname,
 		nil,
 	), prometheus.CounterValue, float64(memoryUsage), cName)
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_memory_total_bytes",
+		"Total memory bytes",
+		labelCname,
+		nil,
+	), prometheus.CounterValue, float64(memoryTotal), cName)
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 		"dex_memory_utilization_percent",
 		"Memory utilization percent",

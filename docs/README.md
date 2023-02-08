@@ -9,6 +9,7 @@ Exports container state (running or not), current cpu and memory utilization, ne
 - `dex_block_io_write_bytes`
 - `dex_container_running`
 - `dex_cpu_utilization_percent`
+- `dex_memory_total_bytes`
 - `dex_memory_usage_bytes`
 - `dex_memory_utilization_percent`
 - `dex_network_rx_bytes`
