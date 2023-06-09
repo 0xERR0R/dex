@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/docker/docker v24.0.1+incompatible
 	github.com/prometheus/client_golang v1.15.1
-	github.com/sirupsen/logrus v1.9.2
+	github.com/sirupsen/logrus v1.9.3
 )
 
 require (
