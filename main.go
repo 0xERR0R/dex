@@ -16,10 +16,13 @@ import (
 )
 
 func main() {
-	prometheus.MustRegister(newDockerCollector())
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(newDockerCollector())
 
 	router := http.NewServeMux()
-	router.Handle("/metrics", promhttp.Handler())
+	router.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{
+		Registry: reg,
+	}))
 
 	serverPort := 8080
 
