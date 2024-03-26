@@ -98,7 +98,8 @@ func (c *DockerCollector) processContainer(container types.Container, ch chan<- 
 }
 
 func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
-	cpuDelta := containerStats.CPUStats.CPUUsage.TotalUsage - containerStats.PreCPUStats.CPUUsage.TotalUsage
+	totalUsage := containerStats.CPUStats.CPUUsage.TotalUsage
+	cpuDelta := totalUsage - containerStats.PreCPUStats.CPUUsage.TotalUsage
 	sysemDelta := containerStats.CPUStats.SystemUsage - containerStats.PreCPUStats.SystemUsage
 
 	cpuUtilization := float64(cpuDelta) / float64(sysemDelta) * 100.0
@@ -109,6 +110,13 @@ func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats
 		labelCname,
 		nil,
 	), prometheus.GaugeValue, cpuUtilization, cName)
+
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_cpu_utilization_seconds_total",
+		"Cumulative CPU utilization in seconds",
+		labelCname,
+		nil,
+	), prometheus.CounterValue, float64(totalUsage)/1e9, cName)
 }
 
 func (c *DockerCollector) networkMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
