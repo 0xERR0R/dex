@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
@@ -34,7 +35,7 @@ func (c *DockerCollector) Describe(_ chan<- *prometheus.Desc) {
 }
 
 func (c *DockerCollector) Collect(ch chan<- prometheus.Metric) {
-	containers, err := c.cli.ContainerList(context.Background(), types.ContainerListOptions{
+	containers, err := c.cli.ContainerList(context.Background(), container.ListOptions{
 		All: true,
 	})
 	if err != nil {
