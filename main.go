@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -21,6 +22,13 @@ func main() {
 	router.Handle("/metrics", promhttp.Handler())
 
 	serverPort := 8080
+
+	if strPort, isSet := os.LookupEnv("DEX_PORT"); isSet {
+		if intPort, err := strconv.Atoi(strPort); err == nil {
+			serverPort = intPort
+		}
+	}
+
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%v", serverPort),
 		Handler:      router,

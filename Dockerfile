@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.20-alpine AS build-env
+FROM golang:1.22.1-alpine AS build-env
 RUN apk add --no-cache \
     git \
     make \
@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0
-    
+
 WORKDIR /src
 
 COPY go.mod .
