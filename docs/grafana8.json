@@ -526,14 +526,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(dex_network_rx_bytes{container_name=~\"$container\"}[$range])",
+          "expr": "rate(dex_network_rx_bytes_total{container_name=~\"$container\"}[$range])",
           "interval": "",
           "legendFormat": "rx - {{container_name}}",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "-rate(dex_network_tx_bytes{container_name=~\"$container\"}[$range])",
+          "expr": "-rate(dex_network_tx_bytes_total{container_name=~\"$container\"}[$range])",
           "hide": false,
           "interval": "",
           "legendFormat": "tx- {{container_name}}",
@@ -616,14 +616,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(dex_block_io_read_bytes{container_name=~\"$container\"}[$range])",
+          "expr": "rate(dex_block_io_read_bytes_total{container_name=~\"$container\"}[$range])",
           "interval": "",
           "legendFormat": "read - {{container_name}}",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "-rate(dex_block_io_write_bytes{container_name=~\"$container\"}[$range])",
+          "expr": "-rate(dex_block_io_write_bytes_total{container_name=~\"$container\"}[$range])",
           "hide": false,
           "interval": "",
           "legendFormat": "write - {{container_name}}",
@@ -655,7 +655,7 @@
           ]
         },
         "datasource": null,
-        "definition": "dex_block_io_read_bytes",
+        "definition": "dex_block_io_read_bytes_total",
         "description": null,
         "error": null,
         "hide": 0,
@@ -665,7 +665,7 @@
         "name": "container",
         "options": [],
         "query": {
-          "query": "dex_block_io_read_bytes",
+          "query": "dex_block_io_read_bytes_total",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,

@@ -592,14 +592,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(dex_network_rx_bytes{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
+          "expr": "rate(dex_network_rx_bytes_total{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
           "interval": "",
           "legendFormat": "rx - {{container_name}}",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "-rate(dex_network_tx_bytes{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
+          "expr": "-rate(dex_network_tx_bytes_total{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
           "hide": false,
           "interval": "",
           "legendFormat": "tx- {{container_name}}",
@@ -682,14 +682,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(dex_block_io_read_bytes{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
+          "expr": "rate(dex_block_io_read_bytes_total{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
           "interval": "",
           "legendFormat": "read - {{container_name}}",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "-rate(dex_block_io_write_bytes{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
+          "expr": "-rate(dex_block_io_write_bytes_total{container_name=~\"$container\", job=~\"$job.*\"}[$range])",
           "hide": false,
           "interval": "",
           "legendFormat": "write - {{container_name}}",

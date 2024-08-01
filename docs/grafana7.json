@@ -536,7 +536,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(dex_block_io_write_bytes{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
+          "expr": "irate(dex_block_io_write_bytes_total{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
           "interval": "",
           "legendFormat": "{{container_name}}",
           "refId": "A"
@@ -634,7 +634,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(dex_network_rx_bytes{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
+          "expr": "irate(dex_network_rx_bytes_total{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
           "hide": false,
           "interval": "",
           "legendFormat": "{{ container_name }}",
@@ -731,7 +731,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(dex_block_io_read_bytes{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
+          "expr": "irate(dex_block_io_read_bytes_total{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
           "interval": "",
           "legendFormat": "{{container_name}}",
           "refId": "A"
@@ -827,7 +827,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(dex_network_tx_bytes{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
+          "expr": "irate(dex_network_tx_bytes_total{job=~\"$job\",container_name=~\"$container_name\"}[5m])",
           "interval": "",
           "legendFormat": " {{ container_name }}",
           "refId": "A"

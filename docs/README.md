@@ -5,16 +5,16 @@ Exports container state (running or not), current cpu and memory utilization, ne
 
 ## Currently exposed metrics
 
-- `dex_block_io_read_bytes`
-- `dex_block_io_write_bytes`
+- `dex_block_io_read_bytes_total`
+- `dex_block_io_write_bytes_total`
 - `dex_container_running`
 - `dex_cpu_utilization_percent`
 - `dex_cpu_utilization_seconds_total`
 - `dex_memory_total_bytes`
 - `dex_memory_usage_bytes`
 - `dex_memory_utilization_percent`
-- `dex_network_rx_bytes`
-- `dex_network_tx_bytes`
+- `dex_network_rx_bytes_total`
+- `dex_network_tx_bytes_total`
 - `dex_pids_current`
 
 ## Run with docker
