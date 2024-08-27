@@ -55,10 +55,21 @@ func (c *DockerCollector) Collect(ch chan<- prometheus.Metric) {
 
 func (c *DockerCollector) processContainer(cont types.Container, ch chan<- prometheus.Metric, wg *sync.WaitGroup) {
 	defer wg.Done()
+
 	cName := strings.TrimPrefix(strings.Join(cont.Names, ";"), "/")
-	var isRunning float64
+
+	var isRunning, isRestarting, isExited float64
+
 	if cont.State == "running" {
 		isRunning = 1
+	}
+
+	if cont.State == "restarting" {
+		isRestarting = 1
+	}
+
+	if cont.State == "exited" {
+		isExited = 1
 	}
 
 	// container state metric for all containers
@@ -68,6 +79,31 @@ func (c *DockerCollector) processContainer(cont types.Container, ch chan<- prome
 		labelCname,
 		nil,
 	), prometheus.GaugeValue, isRunning, cName)
+
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_container_restarting",
+		"1 if docker container is restarting, 0 otherwise",
+		labelCname,
+		nil,
+	), prometheus.GaugeValue, isRestarting, cName)
+
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+		"dex_container_exited",
+		"1 if docker container exited, 0 otherwise",
+		labelCname,
+		nil,
+	), prometheus.GaugeValue, isExited, cName)
+
+	if inspect, err := c.cli.ContainerInspect(context.Background(), cont.ID); err != nil {
+		log.Fatal(err)
+	} else {
+		ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
+			"dex_container_restarts_total",
+			"Number of times the container has restarted",
+			labelCname,
+			nil,
+		), prometheus.CounterValue, float64(inspect.RestartCount), cName)
+	}
 
 	// stats metrics only for running containers
 	if isRunning == 1 {
@@ -162,7 +198,7 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 	), prometheus.GaugeValue, memoryUtilization, cName)
 }
 
-func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *types.StatsJSON, cName string) {
+func (c *DockerCollector) blockIoMetrics(ch chan<- prometheus.Metric, containerStats *container.StatsResponse, cName string) {
 	var readTotal, writeTotal uint64
 	for _, b := range containerStats.BlkioStats.IoServiceBytesRecursive {
 		if strings.EqualFold(b.Op, "read") {
