@@ -23,13 +23,18 @@ ADD . .
 
 RUN make build
 
+RUN mkdir -p \
+        /rootfs/app \
+        /rootfs/usr/share \
+        /rootfs/etc/ssl/certs \
+    && cp -t /rootfs/app /src/bin/dex \
+    && : `# the timezone data:` \
+    && cp -Rt /rootfs/usr/share /usr/share/zoneinfo \
+    && : `# the tls certificates:` \
+    && cp -t /rootfs/etc/ssl/certs /etc/ssl/certs/ca-certificates.crt
+
 # final stage
 FROM scratch
-COPY --from=build-env /src/bin/dex /app/dex
-
-# the timezone data:
-COPY --from=build-env /usr/share/zoneinfo /usr/share/zoneinfo
-# the tls certificates:
-COPY --from=build-env /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build-env /rootfs /
 
 ENTRYPOINT ["/app/dex"]
