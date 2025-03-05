@@ -6,7 +6,7 @@ toolchain go1.22.1
 
 require (
 	github.com/docker/docker v28.0.0+incompatible
-	github.com/prometheus/client_golang v1.21.0
+	github.com/prometheus/client_golang v1.21.1
 	github.com/sirupsen/logrus v1.9.3
 )
 
