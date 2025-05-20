@@ -1,4 +1,4 @@
-.PHONY: build docker-build docker-buildx-push help
+.PHONY: build docker-build docker-buildx-push help test clean
 .DEFAULT_GOAL := help
 
 DOCKER_IMAGE_NAME=spx01/dex
@@ -22,3 +22,9 @@ docker-build:  ## Build docker image
 
 help:  ## Shows help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+test:
+	go test ./... -v
+
+clean:
+	rm -f $(BIN_OUT_DIR)/$(BINARY_NAME)

@@ -23,6 +23,9 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Run tests
+        run: make test
+
       - name: Build
         run: make build
 
