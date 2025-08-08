@@ -1,8 +1,6 @@
 module dex
 
-go 1.23.0
-
-toolchain go1.24.3
+go 1.24.4
 
 require (
 	github.com/docker/docker v28.3.3+incompatible
