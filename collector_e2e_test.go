@@ -49,7 +49,7 @@ func TestDockerCollector_E2E_BasicMetrics(t *testing.T) {
 	actualContainerName := strings.TrimPrefix(inspectedContainer.Name, "/")
 	dockerCli.Close() // Close this auxiliary client now that we have the name
 
-	collector := newDockerCollector()
+	collector := newDockerCollector(nil)
 	require.NotNil(t, collector, "Collector should not be nil")
 	require.NotNil(t, collector.cli, "Collector Docker client should not be nil")
 	// The main collector.cli will be closed by the main function or when the collector is GC'd if not explicitly closed.
