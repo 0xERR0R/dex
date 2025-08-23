@@ -4,12 +4,29 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestGetLabelValues(t *testing.T) {
+	collector := newDockerCollector([]string{"image", "command", "nonexistent"})
+
+	container := types.Container{
+		ID:      "test-id",
+		Names:   []string{"/test-container"},
+		Image:   "test-image",
+		Command: "test-command",
+		State:   "running",
+	}
+
+	labelValues := collector.getLabelValues(container, "test-container")
+
+	assert.Equal(t, []string{"test-container", "test-image", "test-command", ""}, labelValues)
+}
 
 func TestCPUMetrics(t *testing.T) {
 	c := &DockerCollector{} // We don't need a real client for this test
@@ -33,7 +50,7 @@ func TestCPUMetrics(t *testing.T) {
 
 	ch := make(chan prometheus.Metric, 2) // Expecting 2 metrics
 
-	c.CPUMetrics(ch, stats, containerName)
+	c.CPUMetrics(ch, stats, []string{"container_name"}, []string{containerName})
 	close(ch)
 
 	var metrics []prometheus.Metric
@@ -87,7 +104,7 @@ func TestNetworkMetrics(t *testing.T) {
 	}
 
 	ch := make(chan prometheus.Metric, 2)
-	c.networkMetrics(ch, stats, containerName)
+	c.networkMetrics(ch, stats, []string{"container_name"}, []string{containerName})
 	close(ch)
 
 	var metrics []prometheus.Metric
@@ -142,7 +159,7 @@ func TestMemoryMetrics(t *testing.T) {
 	}
 
 	ch := make(chan prometheus.Metric, 3)
-	c.memoryMetrics(ch, stats, containerName)
+	c.memoryMetrics(ch, stats, []string{"container_name"}, []string{containerName})
 	close(ch)
 
 	var metrics []prometheus.Metric
@@ -208,7 +225,7 @@ func TestBlockIoMetrics(t *testing.T) {
 	}
 
 	ch := make(chan prometheus.Metric, 2)
-	c.blockIoMetrics(ch, stats, containerName)
+	c.blockIoMetrics(ch, stats, []string{"container_name"}, []string{containerName})
 	close(ch)
 
 	var metrics []prometheus.Metric
@@ -259,7 +276,7 @@ func TestPidsMetrics(t *testing.T) {
 	}
 
 	ch := make(chan prometheus.Metric, 1) // Expecting 1 metric
-	c.pidsMetrics(ch, stats, containerName)
+	c.pidsMetrics(ch, stats, []string{"container_name"}, []string{containerName})
 	close(ch)
 
 	var metrics []prometheus.Metric

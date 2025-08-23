@@ -42,6 +42,32 @@ DEX is a lightweight Prometheus exporter that monitors Docker containers and exp
 | Environment Variable | Description | Default |
 |---|---|---|
 | `DEX_PORT` | The port the exporter will listen on. | `8080` |
+| `DEX_LABELS` | Comma-separated list of additional labels to export. | `""` |
+
+### Dynamic Labels
+
+You can add extra labels to all metrics using the `DEX_LABELS` environment variable. This can be useful for adding more context to your metrics, such as the image name or command.
+
+**Available Labels:**
+- `image`
+- `image_id`
+- `command`
+- `created`
+
+**Example:**
+
+```bash
+export DEX_LABELS="image,command"
+```
+
+This will add the `image` and `command` labels to all exported metrics.
+
+> [!WARNING]
+> **NOTE! High Cardinality Ahead!**
+> 
+> Each unique combination of key-value label pairs represents a new time series in Prometheus. Using labels with high cardinality (many different values), such as `image_id` or `created`, can dramatically increase the amount of data stored and impact Prometheus' performance.
+> 
+> For more information, please see the [Prometheus documentation on labels](https://prometheus.io/docs/practices/naming/#labels).
 
 ## Run with docker
 Start docker container with following `docker-compose.yml`:

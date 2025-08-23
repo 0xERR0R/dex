@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,7 +18,14 @@ import (
 
 func main() {
 	reg := prometheus.NewRegistry()
-	reg.MustRegister(newDockerCollector())
+
+	var labels []string
+
+	if rawLabels, isSet := os.LookupEnv("DEX_LABELS"); isSet {
+		labels = strings.Split(rawLabels, ",")
+	}
+
+	reg.MustRegister(newDockerCollector(labels))
 
 	router := http.NewServeMux()
 	router.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{
