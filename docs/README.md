@@ -1,5 +1,4 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/0xERR0R/dex/release.yml "Release")](https://github.com/0xERR0R/dex/actions/workflows/release.yml)
-[![GitHub Release Date](https://img.shields.io/github/release-date/0xERR0R/dex "Latest release date")](https://github.com/0xERR0R/dex/releases)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/0xERR0R/dex "Go version")](#)
 [![Donation](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-blueviolet.svg)](https://ko-fi.com/0xerr0r)
 
