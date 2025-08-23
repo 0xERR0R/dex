@@ -17,6 +17,7 @@ func TestCPUMetrics(t *testing.T) {
 
 	stats := &container.StatsResponse{
 		CPUStats: container.CPUStats{
+			OnlineCPUs: 1,
 			CPUUsage: container.CPUUsage{
 				TotalUsage: 1000000000, // 1 second in nanoseconds
 			},

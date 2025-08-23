@@ -137,8 +137,9 @@ func (c *DockerCollector) CPUMetrics(ch chan<- prometheus.Metric, containerStats
 	totalUsage := containerStats.CPUStats.CPUUsage.TotalUsage
 	cpuDelta := totalUsage - containerStats.PreCPUStats.CPUUsage.TotalUsage
 	sysemDelta := containerStats.CPUStats.SystemUsage - containerStats.PreCPUStats.SystemUsage
+	onlineCPUs := containerStats.CPUStats.OnlineCPUs
 
-	cpuUtilization := float64(cpuDelta) / float64(sysemDelta) * 100.0
+	cpuUtilization := (float64(cpuDelta) / float64(sysemDelta)) * float64(onlineCPUs) * 100.0
 
 	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 		"dex_cpu_utilization_percent",
