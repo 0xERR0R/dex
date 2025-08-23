@@ -175,7 +175,9 @@ func (c *DockerCollector) memoryMetrics(ch chan<- prometheus.Metric, containerSt
 	// From official documentation
 	//Note: On Linux, the Docker CLI reports memory usage by subtracting page cache usage from the total memory usage.
 	//The API does not perform such a calculation but rather provides the total memory usage and the amount from the page cache so that clients can use the data as needed.
-	memoryUsage := containerStats.MemoryStats.Usage - containerStats.MemoryStats.Stats["cache"]
+	//On cgroup v1 hosts, the cache usage is defined as the value of total_inactive_file field in the memory.stat file.
+	//On cgroup v2 hosts, the cache usage is defined as the value of inactive_file field.
+	memoryUsage := containerStats.MemoryStats.Usage - getCacheMemory(containerStats.MemoryStats.Stats)
 	memoryTotal := containerStats.MemoryStats.Limit
 
 	memoryUtilization := float64(memoryUsage) / float64(memoryTotal) * 100.0
@@ -232,4 +234,17 @@ func (c *DockerCollector) pidsMetrics(ch chan<- prometheus.Metric, containerStat
 		labelCname,
 		nil,
 	), prometheus.CounterValue, float64(containerStats.PidsStats.Current), cName)
+}
+
+func getCacheMemory(stats map[string]uint64) uint64 {
+	// On cgroup v2 hosts, the cache usage is defined as the value of inactive_file field.
+	if val, ok := stats["inactive_file"]; ok {
+		return val
+	}
+	// On cgroup v1 hosts, the cache usage is defined as the value of total_inactive_file field.
+	if val, ok := stats["total_inactive_file"]; ok {
+		return val
+	}
+	// Fallback for older versions
+	return stats["cache"]
 }
