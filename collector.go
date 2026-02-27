@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -11,7 +13,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus"
-	log "github.com/sirupsen/logrus"
 )
 
 var labelCname = []string{"container_name"}
@@ -24,7 +25,8 @@ type DockerCollector struct {
 func newDockerCollector(labels []string) *DockerCollector {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		log.Fatalf("can't create docker client: %v", err)
+		slog.Error("can't create docker client", "error", err)
+		os.Exit(1)
 	}
 
 	return &DockerCollector{
@@ -42,7 +44,7 @@ func (c *DockerCollector) Collect(ch chan<- prometheus.Metric) {
 		All: true,
 	})
 	if err != nil {
-		log.Error("can't list containers: ", err)
+		slog.Error("can't list containers", "error", err)
 		return
 	}
 
@@ -72,7 +74,7 @@ func (c *DockerCollector) getLabelValues(cont types.Container, cName string) []s
 			labelValues = append(labelValues, strconv.FormatInt(cont.Created, 10))
 		default:
 			labelValues = append(labelValues, "")
-			log.Warnf("label '%s' doesn't exist in container '%s'", label, cName)
+			slog.Warn("label doesn't exist in container", "label", label, "container", cName)
 		}
 	}
 	return labelValues
@@ -124,7 +126,8 @@ func (c *DockerCollector) processContainer(cont types.Container, ch chan<- prome
 	), prometheus.GaugeValue, isExited, labelValues...)
 
 	if inspect, err := c.cli.ContainerInspect(context.Background(), cont.ID); err != nil {
-		log.Fatal(err)
+		slog.Error("container inspect failed", "error", err)
+		os.Exit(1)
 	} else {
 		ch <- prometheus.MustNewConstMetric(prometheus.NewDesc(
 			"dex_container_restarts_total",
@@ -138,15 +141,16 @@ func (c *DockerCollector) processContainer(cont types.Container, ch chan<- prome
 	if isRunning == 1 {
 
 		if stats, err := c.cli.ContainerStats(context.Background(), cont.ID, false); err != nil {
-			log.Fatal(err)
+			slog.Error("container stats failed", "error", err)
+			os.Exit(1)
 		} else {
 			var containerStats container.StatsResponse
 			err := json.NewDecoder(stats.Body).Decode(&containerStats)
 			if err != nil {
-				log.Error("can't read api stats: ", err)
+				slog.Error("can't read api stats", "error", err)
 			}
 			if err := stats.Body.Close(); err != nil {
-				log.Error("can't close body: ", err)
+				slog.Error("can't close body", "error", err)
 			}
 
 			c.blockIoMetrics(ch, &containerStats, labelNames, labelValues)

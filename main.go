@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,8 +13,6 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -55,22 +54,24 @@ func main() {
 
 	go func() {
 		<-quit
-		log.Info("Server is shutting down...")
+		slog.Info("Server is shutting down...")
 
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
 		if err := server.Shutdown(ctx); err != nil {
-			log.Fatalf("Could not gracefully shutdown the server: %v\n", err)
+			slog.Error("Could not gracefully shutdown the server", "error", err)
+			os.Exit(1)
 		}
 		close(done)
 	}()
 
-	log.Info("Server is ready to handle requests at :", serverPort)
+	slog.Info("Server is ready to handle requests", "port", serverPort)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("Could not listen on %d: %v\n", serverPort, err)
+		slog.Error("Could not listen", "port", serverPort, "error", err)
+		os.Exit(1)
 	}
 
 	<-done
-	log.Info("Server stopped")
+	slog.Info("Server stopped")
 }
