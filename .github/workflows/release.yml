@@ -38,7 +38,7 @@ jobs:
       - name: Get next version
         id: version
         if: env.SHOULD_PUSH == 'true'
-        uses: reecetech/version-increment@2024.10.1
+        uses: reecetech/version-increment@2026.8.4
         with:
           scheme: semver
           increment: patch
